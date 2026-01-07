@@ -34,7 +34,6 @@ io.on('connection', (socket) => {
             socket.emit('system', `Connected to IRC as ${nick}`);
         });
 
-        // IRC → WEB
         irc.on('message', (event) => {
             socket.emit('message', {
                 channel: event.target,
@@ -58,7 +57,6 @@ io.on('connection', (socket) => {
         socket.irc = irc;
     });
 
-    // WEB → IRC
     socket.on('chat', (text) => {
         if (!socket.irc) return;
         socket.irc.say('#webchatirc-general', text);

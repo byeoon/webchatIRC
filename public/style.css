@@ -26,7 +26,7 @@ body {
 
 .webchatcontainer {
     display: flex;
-    flex-direction: column; /* stack children vertically */
+    flex-direction: column;
     border: 2px solid #b8b8b8;
     box-shadow: 0 0 10px 8px #0b0b0bb0;
     background-color: rgba(20, 17, 25, 0.8);
