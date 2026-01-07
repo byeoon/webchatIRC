@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <title>webchat - IRC for your website</title>
+    <link rel="stylesheet" href="https://getbootstrap.com/1.4.0/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<html lang="en">
+<div class="topbar">
+    <div class="fill">
+        <div class="container">
+            <a class="brand" href="#">webchat IRC</a>
+            <ul class="nav">
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="#about">Setup</a></li>
+                <li class="active"><a href="/demo.html">Demo</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<body>
+    <br>
+    <center>
+        <div class="webchatcontainer">
+            <h1 style="color: #fff; margin: -4px;">webchat-IRC</h1>
+            <center>
+                <h3 style="color:#fff">Channel: <span id="channelName" style="color:#7be66c">Unknown</span></h3>
+            </center>
+            <center><button class="btn primary" id="connectBtn">Connect</button></center>
+            <div class="separator" />
+            <div id="log">
+                <ul id="chat-list"></ul>
+            </div>
+        </div>
+    </center>
+    <center>
+        <div contenteditable="true" class="chatbox"></div>
+    </center>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const log = document.getElementById('log');
+        const chatList = document.getElementById('chat-list');
+        const channelName = document.getElementById('channelName');
+        const domainName = window.location.hostname;
+        const socket = io();
+
+        socket.on('system', (text) => {
+            const li = document.createElement('li');
+            li.classList.add('system-msg');
+            li.innerText = `* ${text}`;
+            chatList.appendChild(li);
+            chatList.scrollTop = chatList.scrollHeight;
+        });
+
+        socket.on('message', (msg) => {
+            const li = document.createElement('li');
+            li.classList.add('chat-msg');
+            li.innerHTML = `<span class="channel">[${msg.channel}]</span> <span class="nick">${msg.nick}</span>: <span class="text">${msg.text}</span>`;
+
+            chatList.appendChild(li);
+            chatList.scrollTop = chatList.scrollHeight;
+        });
+
+        socket.emit('register', {
+            domain: window.location.hostname,
+            username: prompt("Enter your name") || "Guest"
+        });
+
+    </script>
+
+    <footer>
+        <p>Open source on <b>GitHub</b>!</p>
+    </footer>
+
+    </div>
+
+    <script>
+        const chatbox = document.querySelector('.chatbox');
+
+        chatbox.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const text = chatbox.innerText.trim();
+                if (!text) return;
+
+                socket.emit('chat', text);
+                chatbox.innerText = '';
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

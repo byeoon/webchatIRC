@@ -1,0 +1,30 @@
+{
+  "name": "webchat-irc",
+  "version": "1.0.0",
+  "description": "Interlinked IRC for your website.",
+  "keywords": [
+    "irc"
+  ],
+  "homepage": "https://github.com/byeoon/webchat-irc#readme",
+  "bugs": {
+    "url": "https://github.com/byeoon/webchat-irc/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/byeoon/webchat-irc.git"
+  },
+  "license": "ISC",
+  "author": "byeoon",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "irc-framework": "^4.14.0",
+    "node-irc": "^0.0.5",
+    "socket.io": "^4.8.3",
+    "stream-replace": "^1.0.0"
+  }
+}
