@@ -38,7 +38,8 @@ io.on('connection', (socket) => {
             socket.emit('message', {
                 channel: event.target,
                 nick: event.nick,
-                text: event.message
+                text: event.message,
+                fullname: event.ident
             });
         });
 
