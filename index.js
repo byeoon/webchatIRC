@@ -80,6 +80,21 @@ io.on('connection', (socket) => {
         }
         console.log('[webchatIRC Console] Client Disconnected ');
     });
+
+  function populateWHOIS(irc, channel, socket) {
+    irc.names(channel, (nicks) => {
+        Object.keys(nicks).forEach((existingNick) => {
+            if (existingNick === irc.user.nick) return;
+            irc.whois(existingNick, (info) => {
+                domainMap[existingNick] = info.real_name || "???";
+                socket.emit('whois', {
+                    nick: existingNick,
+                    domain: domainMap[existingNick]
+                });
+            });
+        });
+    });
+    }
 });
 
 // Static site
