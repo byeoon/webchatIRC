@@ -11,37 +11,36 @@ const io = new Server(server);
 const port = 3000;
 
 const domainMap = {};
-
-
 io.on('connection', (socket) => {
     console.log('[webchatIRC Console] Client connected');
 
     socket.on('register', ({ domain, username }) => {
-        const safeDomain = domain.replace(/\./g, '_');
-        const nick = `${username}_${safeDomain}`.slice(0, 30);
+        const nick = `${username}_${Math.floor(Math.random() * 10000)}`;
         const irc = new IRC.Client();
-
-        domainMap[nick] = domain;
-
-        socket.domain = domain;
         irc.userDomain = domain;
 
         irc.connect({
             host: 'irc.libera.chat',
             port: 6697,
-            nick,
-            user: nick,
-            gecos: `From ${domain}`,
+            nick: nick,
+            username: `${username}_wcIRC`, // ?? 9 char limit we r cooked
+            gecos: `${domain}`,
             tls: true
         });
 
         irc.on('registered', () => {
             irc.join('#webchatirc-general');
             socket.emit('system', `Connected to IRC as ${nick}`);
+            irc.whois(nick, (info) => {
+                domainMap[nick] = info.real_name;
+                console.log(domainMap);
+                socket.emit('whois', info);
+            });
         });
 
         irc.on('message', (event) => {
             const senderDomain = domainMap[event.nick] || 'Unknown';
+            console.log(domainMap[event.nick])
             socket.emit('message', {
                 channel: event.target,
                 nick: event.nick,
@@ -52,38 +51,32 @@ io.on('connection', (socket) => {
 
         irc.on('join', (event) => {
             socket.emit('system', `${event.nick} joined ${event.channel}`);
+            if (event.nick === irc.user.nick) return;
+            irc.whois(event.nick, (info) => {
+                domainMap[event.nick] = info.real_name || 'Unknown';
+            });
         });
-
-        irc.on('part', (event) => {
-            socket.emit('system', `${event.nick} left ${event.channel}`);
-        });
-
-        irc.on('quit', (event) => {
-            socket.emit('system', `${event.nick} quit IRC`);
-            delete domainMap[event.nick]; // clean up domain map
-        });
-
+        irc.on('part', (event) => { socket.emit('system', `${event.nick} left ${event.channel}`); });
+        irc.on('quit', (event) => { socket.emit('system', `${event.nick} quit IRC`); });
         socket.irc = irc;
     });
 
     socket.on('chat', (text) => {
         if (!socket.irc) return;
         socket.irc.say('#webchatirc-general', text);
-         const domain = domainMap[socket.irc.user.nick] || 'Unknown';
 
         // echo! echo! echo!
         socket.emit('message', {
-        channel: '#webchatirc-general',
-        nick: socket.irc.user.nick,
-        text,
-        domain
-    });
+            channel: '#webchatirc-general',
+            nick: socket.irc.user.nick,
+            text,
+            domain: socket.irc.userDomain
+        });
     });
 
     socket.on('disconnect', () => {
         if (socket.irc) {
-            socket.irc.quit('webchatIRC Client Disconnected | https://github.com/byeoon/webchatIRC');
-             delete domainMap[socket.irc.user.nick];
+            socket.irc.quit('webchatIRC Client Disconnected');
         }
         console.log('[webchatIRC Console] Client Disconnected ');
     });
