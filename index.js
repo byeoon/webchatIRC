@@ -10,6 +10,9 @@ const io = new Server(server);
 
 const port = 3000;
 
+const domainMap = {};
+
+
 io.on('connection', (socket) => {
     console.log('[webchatIRC Console] Client connected');
 
@@ -17,7 +20,9 @@ io.on('connection', (socket) => {
         const safeDomain = domain.replace(/\./g, '_');
         const nick = `${username}_${safeDomain}`.slice(0, 30);
         const irc = new IRC.Client();
-        
+
+        domainMap[nick] = domain;
+
         socket.domain = domain;
         irc.userDomain = domain;
 
@@ -36,11 +41,12 @@ io.on('connection', (socket) => {
         });
 
         irc.on('message', (event) => {
+            const senderDomain = domainMap[event.nick] || 'Unknown';
             socket.emit('message', {
                 channel: event.target,
                 nick: event.nick,
                 text: event.message,
-                domain: irc.userDomain
+                domain: senderDomain
             });
         });
 
@@ -54,6 +60,7 @@ io.on('connection', (socket) => {
 
         irc.on('quit', (event) => {
             socket.emit('system', `${event.nick} quit IRC`);
+            delete domainMap[event.nick]; // clean up domain map
         });
 
         socket.irc = irc;
@@ -62,19 +69,21 @@ io.on('connection', (socket) => {
     socket.on('chat', (text) => {
         if (!socket.irc) return;
         socket.irc.say('#webchatirc-general', text);
+         const domain = domainMap[socket.irc.user.nick] || 'Unknown';
 
         // echo! echo! echo!
         socket.emit('message', {
         channel: '#webchatirc-general',
         nick: socket.irc.user.nick,
         text,
-        domain: socket.domain
+        domain
     });
     });
 
     socket.on('disconnect', () => {
         if (socket.irc) {
             socket.irc.quit('webchatIRC Client Disconnected | https://github.com/byeoon/webchatIRC');
+             delete domainMap[socket.irc.user.nick];
         }
         console.log('[webchatIRC Console] Client Disconnected ');
     });
