@@ -17,6 +17,9 @@ io.on('connection', (socket) => {
         const safeDomain = domain.replace(/\./g, '_');
         const nick = `${username}_${safeDomain}`.slice(0, 30);
         const irc = new IRC.Client();
+        
+        socket.domain = domain;
+        irc.userDomain = domain;
 
         irc.connect({
             host: 'irc.libera.chat',
@@ -26,8 +29,6 @@ io.on('connection', (socket) => {
             gecos: `From ${domain}`,
             tls: true
         });
-
-        socket.domain = domain;
 
         irc.on('registered', () => {
             irc.join('#webchatirc-general');
@@ -39,7 +40,7 @@ io.on('connection', (socket) => {
                 channel: event.target,
                 nick: event.nick,
                 text: event.message,
-                domain: socket.domain
+                domain: irc.userDomain
             });
         });
 
