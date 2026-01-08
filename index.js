@@ -11,13 +11,11 @@ const io = new Server(server);
 const port = 3000;
 
 io.on('connection', (socket) => {
-    console.log('[webchat] browser connected');
+    console.log('[webchatIRC Console] Client connected');
 
     socket.on('register', ({ domain, username }) => {
         const safeDomain = domain.replace(/\./g, '_');
-        const rand = Math.floor(Math.random() * 10000);
-        const nick = `${username}_${safeDomain}_${rand}`.slice(0, 30);
-
+        const nick = `${username}_${safeDomain}`.slice(0, 30);
         const irc = new IRC.Client();
 
         irc.connect({
@@ -29,6 +27,8 @@ io.on('connection', (socket) => {
             tls: true
         });
 
+        socket.domain = domain;
+
         irc.on('registered', () => {
             irc.join('#webchatirc-general');
             socket.emit('system', `Connected to IRC as ${nick}`);
@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
                 channel: event.target,
                 nick: event.nick,
                 text: event.message,
-                fullname: event.ident
+                domain: socket.domain
             });
         });
 
@@ -66,15 +66,16 @@ io.on('connection', (socket) => {
         socket.emit('message', {
         channel: '#webchatirc-general',
         nick: socket.irc.user.nick,
-        text
+        text,
+        domain: socket.domain
     });
     });
 
     socket.on('disconnect', () => {
         if (socket.irc) {
-            socket.irc.quit('Web client disconnected');
+            socket.irc.quit('webchatIRC Client Disconnected | https://github.com/byeoon/webchatIRC');
         }
-        console.log('[webchat] browser disconnected');
+        console.log('[webchatIRC Console] Client Disconnected ');
     });
 });
 

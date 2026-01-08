@@ -59,7 +59,7 @@
         socket.on('message', (msg) => {
             const li = document.createElement('li');
             li.classList.add('chat-msg');
-            li.innerHTML = `<span class="channel">[${msg.channel}]</span> <span class="nick">${msg.nick}</span>: <span class="text">${msg.text}</span> <br><span class="recievedfrom">From: ${msg.fullname}</span>`;
+            li.innerHTML = `<span class="channel">[${msg.domain}]</span> <span class="nick">${msg.nick}</span>: <span class="text">${msg.text}</span>`;
 
             chatList.appendChild(li);
             chatList.scrollTop = chatList.scrollHeight;
@@ -73,7 +73,7 @@
     </script>
 
     <footer>
-       <p>Open source on <b><a href="https://github.com/byeoon/webchatIRC">GitHub</a></b>!</p>
+        <p>Open source on <b><a href="https://github.com/byeoon/webchatIRC">GitHub</a></b>!</p>
     </footer>
 
     </div>
