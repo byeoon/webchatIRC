@@ -36,8 +36,14 @@
 
         <div class="webchatcontainer" id="chatContainer">
             <div class="chat-header">
-                <h1>webchat-IRC</h1>
-                <span class="channel-label" id="channelLabel">#webchatirc-general</span>
+                <div class="chat-header-left">
+                    <h1>webchat-IRC</h1>
+                    <span class="channel-label" id="channelLabel">#webchatirc-general</span>
+                </div>
+                <div class="chat-header-right">
+                    <span class="server-label" id="serverLabel"></span>
+                    <span class="users-label" id="usersLabel"></span>
+                </div>
             </div>
             <div class="divider"></div>
             <div id="log">
@@ -67,9 +73,12 @@
         const sendBtn = document.getElementById('sendBtn');
         const chatboxWrapper = document.getElementById('chatboxWrapper');
         const channelLabel = document.getElementById('channelLabel');
+        const serverLabel = document.getElementById('serverLabel');
+        const usersLabel = document.getElementById('usersLabel');
 
         const socket = io();
         let connected = false;
+        let currentUserCount = 0;
 
         function formatTime(ts) {
             const d = ts ? new Date(ts) : new Date();
@@ -103,6 +112,26 @@
         socket.on('message', (msg) => addChatMessage(msg));
         socket.on('error_msg', (text) => {
             addSystemMessage(`ERROR: ${text}`);
+        });
+
+        socket.on('server_info', (data) => {
+            serverLabel.textContent = `Server: ${data.server}`;
+            currentUserCount = data.userCount;
+            usersLabel.textContent = `${currentUserCount} user${currentUserCount !== 1 ? 's' : ''}`;
+        });
+
+        socket.on('user_joined', () => {
+            if (currentUserCount > 0) {
+                currentUserCount++;
+                usersLabel.textContent = `${currentUserCount} user${currentUserCount !== 1 ? 's' : ''}`;
+            }
+        });
+
+        socket.on('user_left', () => {
+            if (currentUserCount > 0) {
+                currentUserCount--;
+                usersLabel.textContent = `${currentUserCount} user${currentUserCount !== 1 ? 's' : ''}`;
+            }
         });
 
         function doConnect() {

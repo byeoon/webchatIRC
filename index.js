@@ -33,8 +33,12 @@ const domainMap = {};
 
 function populateWHOIS(irc, channel, socket) {
     irc.raw('NAMES', channel);
-    irc.once('users', (event) => {
+    irc.once('userlist', (event) => {
         if (!event.users) return;
+        socket.emit('server_info', {
+            server: ircConfig.host,
+            userCount: event.users.length
+        });
         event.users.forEach((user) => {
             const nick = user.nick;
             if (nick === irc.user.nick) return;
@@ -116,6 +120,7 @@ io.on('connection', (socket) => {
 
         irc.on('join', (event) => {
             socket.emit('system', `${event.nick} joined ${event.channel}`);
+            socket.emit('user_joined');
             if (event.nick === irc.user.nick) return;
             irc.whois(event.nick, (info) => {
                 domainMap[event.nick] = info.real_name || 'Unknown';
@@ -124,11 +129,13 @@ io.on('connection', (socket) => {
 
         irc.on('part', (event) => {
             socket.emit('system', `${event.nick} left ${event.channel}`);
+            socket.emit('user_left');
             delete domainMap[event.nick];
         });
 
         irc.on('quit', (event) => {
             socket.emit('system', `${event.nick} quit IRC`);
+            socket.emit('user_left');
             delete domainMap[event.nick];
         });
 
