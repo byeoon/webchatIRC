@@ -1,0 +1,10 @@
+{
+  "port": 3000,
+  "irc": {
+    "mode": "centralized",
+    "host": "irc.libera.chat",
+    "port": 6697,
+    "tls": true,
+    "channel": "#webchatirc-general"
+  }
+}
