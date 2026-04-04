@@ -66,7 +66,7 @@ Once the server is running, embed the widget on any page using an iframe:
 </iframe>
 ```
 
-The `/embed.html` widget includes tabbed panels for **Chat** and **Guestbook** — fully self-contained with no external dependencies.
+The `/embed.html` widget includes tabbed panels for **Chat** and **Guestbook**.
 
 
 ## Development
@@ -86,5 +86,4 @@ npm start
 | Route | Description |
 |---|---|
 | `/` | Landing page |
-| `/demo.html` | Full demo with navbar |
-| `/embed.html` | Embeddable widget (chat + guestbook tabs) |
+| `/embed.html` | Embeddable widget (chat + guestbook tabs) (This also serves as a live demo!) |
