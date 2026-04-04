@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "Interlinked IRC for your website.",
   "keywords": [
-    "irc"
+    "irc",
+    "chat",
+    "webchat",
+    "embed",
+    "widget"
   ],
   "homepage": "https://github.com/byeoon/webchat-irc#readme",
   "bugs": {
@@ -17,7 +21,18 @@
   "author": "byeoon",
   "type": "commonjs",
   "main": "index.js",
+  "bin": {
+    "webchat-irc": "./bin/webchat.js"
+  },
+  "files": [
+    "bin/",
+    "public/",
+    "index.js",
+    "webchat.config.example.json",
+    "README.md"
+  ],
   "scripts": {
+    "start": "node bin/webchat.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

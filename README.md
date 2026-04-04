@@ -1,43 +1,90 @@
 # webchat-IRC
 
-Bring back the classic web to your website. 
+Bring back the classic web to your website.
 
-## Setup
-
-### Prerequisites
-- Node.js installed on your system
-
-### 1. Installation
-Clone the repository and install the required dependencies:
+## Quick Start
 
 ```bash
-git clone https://github.com/byeoon/webchat-irc.git
-cd webchat-irc
-npm install
+npm install webchat-irc
 ```
 
-### 2. Configuration
-The server's configuration is stored in `config.json`. By default, it connects to the `#webchatirc-general` channel on `irc.libera.chat`. You can adjust the web server port and the IRC connection details to your preferences.
+Copy the example config into your project directory:
+
+```bash
+cp node_modules/webchat-irc/webchat.config.example.json webchat.config.json
+```
+
+Edit `webchat.config.json` with your IRC server details, then start the server:
+
+```bash
+npx webchat-irc
+```
+
+Open `http://localhost:3000` to see the results!
+
+## Configuration
+
+Create a `webchat.config.json` in your project root:
 
 ```json
 {
   "port": 3000,
   "irc": {
-    "mode": "centralized",
     "host": "irc.libera.chat",
     "port": 6697,
     "tls": true,
-    "channel": "#webchatirc-general"
+    "channel": "#your-channel"
+  },
+  "guestbook": {
+    "enabled": true,
+    "maxEntries": 200
   }
 }
 ```
 
-### 3. Run the server
-Start the application using Node:
+| Option | Default | Description |
+|---|---|---|
+| `port` | `3000` | HTTP server port |
+| `irc.host` | `irc.libera.chat` | IRC server hostname |
+| `irc.port` | `6697` | IRC server port |
+| `irc.tls` | `true` | Use TLS/SSL |
+| `irc.channel` | `#webchatirc-general` | IRC channel to join |
+| `guestbook.enabled` | `true` | Enable/disable the guestbook feature |
+| `guestbook.maxEntries` | `200` | Maximum stored guestbook entries |
 
-```bash
-node index.js
+## Embedding on Your Website
+
+Once the server is running, embed the widget on any page using an iframe:
+
+```html
+<iframe
+  src="https://your-server.com/embed.html"
+  width="400"
+  height="500"
+  frameborder="0"
+  style="border-radius: 6px; border: 1px solid #333;">
+</iframe>
 ```
 
-### 4. Access the Webchat
-Open your web browser and navigate to `http://localhost:3000` (or whichever port you specified in the `config.json`). You can start chatting immediately!
+The `/embed.html` widget includes tabbed panels for **Chat** and **Guestbook** — fully self-contained with no external dependencies.
+
+
+## Development
+
+Clone and run locally:
+
+```bash
+git clone https://github.com/byeoon/webchat-irc.git
+cd webchat-irc
+npm install
+cp webchat.config.example.json webchat.config.json
+npm start
+```
+
+## Pages
+
+| Route | Description |
+|---|---|
+| `/` | Landing page |
+| `/demo.html` | Full demo with navbar |
+| `/embed.html` | Embeddable widget (chat + guestbook tabs) |

@@ -1,2 +1,4 @@
 node_modules
 .env
+guestbook.json
+webchat.config.json
